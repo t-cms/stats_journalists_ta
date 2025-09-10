@@ -1,0 +1,67 @@
+---
+title: "jour_405_final_project_work"
+author: "Tiasia Saunders"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(zoo)
+```
+
+#loading crime data 
+
+```{r}
+crime_data <- read_csv("four_states_2022_2023_crime_data.csv") |> 
+  clean_names()
+```
+```{r}
+crime_data <- crime_data[!apply(is.na(crime_data), 1, all), ]
+```
+
+
+### loading scooter/ ebike data 
+
+```{r}
+umd_scooter_data <- read_csv("umd_scooter_data.csv") |> clean_names()
+umd_ebike_data <- read_csv("umd_ebike_data.csv") |> clean_names()
+```
+
+```{r}
+# Rename columns (except time_period)
+ebike_renamed <- umd_ebike_data %>%
+  rename_with(~ paste0("ebike_", .), .cols = -time_period)
+
+scooter_renamed <- umd_scooter_data %>%
+  rename_with(~ paste0("scooter_", .), .cols = -time_period)
+
+# Join by time_period
+combined_umd_ebike_scooter_data <- full_join(ebike_renamed, scooter_renamed, by = "time_period")
+
+```
+
+
+
+```{r}
+combined_umd_ebike_scooter_data <- combined_umd_ebike_scooter_data %>%
+  select(contains("time_period"), contains("average"), contains("total"))
+```
+
+```{r}
+combined_umd_ebike_scooter_data <- combined_umd_ebike_scooter_data %>%
+  mutate(time_period_qtr = as.yearqtr(time_period, format = "%Y-Q%q")) %>%
+  arrange(time_period_qtr) |>
+  select(-time_period_qtr)
+
+write_csv(combined_umd_ebike_scooter_data, "combined_umd_ebike_scooter_data.csv")
+```
+
+
+```{r}
+
+```
+

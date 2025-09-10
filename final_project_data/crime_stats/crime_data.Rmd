@@ -1,0 +1,16 @@
+```{r}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+```
+
+```{r}
+crime_data_2022 <- read.csv("crime_data_2022.csv") |> 
+  clean_names()
+```
+
+```{r}
+
+```
+
+
